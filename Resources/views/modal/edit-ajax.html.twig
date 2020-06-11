@@ -1,0 +1,14 @@
+{{ form_start(form, {'action': path('mail_edit',{'form': form})}) }}
+    {{ form_row(form.recipients) }}
+<button title="envoyer le mail" class="btn btn-sm btn-primary"><i class="fa fa-reply"></i>{{ button_label|default('Send') }}</button>
+{{ form_end(form) }}
+<script>
+    loadModal();
+</script>
+{#<form method="post">#}
+
+{#    <textarea class="summernote" name="editordata"></textarea>#}
+{#</form>#}
+
+
+

@@ -1,0 +1,12 @@
+####################################
+## LogBundle
+##
+## @author Clément <clement.m@numeric-wave.eu>
+####################################
+
+###############
+## Flash
+###############
+flashes:
+    error:
+        classDoesntExist: "La classe demandée n'existe plus"

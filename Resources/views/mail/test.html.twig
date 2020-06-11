@@ -1,0 +1,21 @@
+
+
+{{ dump(request) }}
+{{ dump(form) }}
+{{ dump(attachments) }}
+{% for attachment in attachments %}
+    {{ attachment.filename }}
+{% endfor %}
+{{ dump(mail) }}
+{% for attachment in mail.attachments %}
+    <div class="attachment" data-attachment-id="{{ attachment.id }}" data-attachment-size="{{ attachment.size }}" style="display: inline-block; margin : 2px;">
+        <!-- This is used as the file preview template -->
+        <div class="badge badge-primary">
+            <span class="name" >{{ attachment.filename }}</span>
+            {% if attachment.canbedeleted %}
+                <i class="remove-attachment glyphicon glyphicon-remove" title="supprimer" style="color: white; margin : 2px;"></i>
+            {% endif %}
+        </div>
+    </div>
+
+{% endfor %}

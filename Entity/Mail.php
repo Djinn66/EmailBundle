@@ -1,0 +1,381 @@
+<?php
+
+namespace Mail\EmailManagerBundle\Entity;
+
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+
+
+/**
+ * Mail
+ *
+ * @ORM\Table(name="mail")
+ * @ORM\Entity(repositoryClass="Mail\EmailManagerBundle\Repository\MailRepository")
+ */
+class Mail
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="recipients", type="string")
+     */
+    protected $recipients;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="carbon_copy_recipients", type="string", nullable=true)
+     */
+    protected $carbonCopyRecipients;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="blind_carbon_copy_recipients", type="string", nullable=true)
+     */
+    protected $blindCarbonCopyRecipients;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="sender", type="string", length=255)
+     */
+    private $sender;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="subject", type="string", length=255)
+     */
+    private $subject;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="html_content", type="text", nullable=true)
+     */
+    private $htmlContent;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="text_content", type="text", nullable=true)
+     */
+    private $textContent;
+
+    /**
+     * @var DateTime|true
+     *
+     * @ORM\Column(name="sent_at", type="datetime", options={"default": "CURRENT_TIMESTAMP"}, nullable=true )
+     */
+    private $sentAt;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_sent", type="boolean")
+     */
+    private $isSent;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(
+     *     targetEntity="Mail\EmailManagerBundle\Entity\Attachment",
+     *     mappedBy="mail",
+     *     cascade={"persist", "remove"}
+     *     )
+     *
+     */
+    private $attachments;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->attachments = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set recipients.
+     *
+     * @param string $recipients
+     *
+     * @return Mail
+     */
+    public function setRecipients($recipients)
+    {
+        $this->recipients = $recipients;
+
+        return $this;
+    }
+
+    /**
+     * Get recipients.
+     *
+     * @return string
+     */
+    public function getRecipients()
+    {
+        return $this->recipients;
+    }
+
+    /**
+     * Set carbonCopyRecipients.
+     *
+     * @param string|null $carbonCopyRecipients
+     *
+     * @return Mail
+     */
+    public function setCarbonCopyRecipients($carbonCopyRecipients = null)
+    {
+        $this->carbonCopyRecipients = $carbonCopyRecipients;
+
+        return $this;
+    }
+
+    /**
+     * Get carbonCopyRecipients.
+     *
+     * @return string|null
+     */
+    public function getCarbonCopyRecipients()
+    {
+        return $this->carbonCopyRecipients;
+    }
+
+    /**
+     * Set blindCarbonCopyRecipients.
+     *
+     * @param string|null $blindCarbonCopyRecipients
+     *
+     * @return Mail
+     */
+    public function setBlindCarbonCopyRecipients($blindCarbonCopyRecipients = null)
+    {
+        $this->blindCarbonCopyRecipients = $blindCarbonCopyRecipients;
+
+        return $this;
+    }
+
+    /**
+     * Get blindCarbonCopyRecipients.
+     *
+     * @return string|null
+     */
+    public function getBlindCarbonCopyRecipients()
+    {
+        return $this->blindCarbonCopyRecipients;
+    }
+
+    /**
+     * Set sender.
+     *
+     * @param string $sender
+     *
+     * @return Mail
+     */
+    public function setSender($sender)
+    {
+        $this->sender = $sender;
+
+        return $this;
+    }
+
+    /**
+     * Get sender.
+     *
+     * @return string
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
+
+    /**
+     * Set subject.
+     *
+     * @param string $subject
+     *
+     * @return Mail
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * Get subject.
+     *
+     * @return string
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+
+    /**
+     * Set htmlContent.
+     *
+     * @param string|null $htmlContent
+     *
+     * @return Mail
+     */
+    public function setHtmlContent($htmlContent = null)
+    {
+        $this->htmlContent = $htmlContent;
+
+        return $this;
+    }
+
+    /**
+     * Get htmlContent.
+     *
+     * @return string|null
+     */
+    public function getHtmlContent()
+    {
+        return $this->htmlContent;
+    }
+
+    /**
+     * Set textContent.
+     *
+     * @param string|null $textContent
+     *
+     * @return Mail
+     */
+    public function setTextContent($textContent = null)
+    {
+        $this->textContent = $textContent;
+
+        return $this;
+    }
+
+    /**
+     * Get textContent.
+     *
+     * @return string|null
+     */
+    public function getTextContent()
+    {
+        return $this->textContent;
+    }
+
+    /**
+     * Set sentAt.
+     *
+     * @param DateTime|null $sentAt
+     *
+     * @return Mail
+     */
+    public function setSentAt($sentAt = null)
+    {
+        $this->sentAt = $sentAt;
+
+        return $this;
+    }
+
+    /**
+     * Get sentAt.
+     *
+     * @return DateTime|null
+     */
+    public function getSentAt()
+    {
+        return $this->sentAt;
+    }
+
+    /**
+     * Set isSent.
+     *
+     * @param bool $isSent
+     *
+     * @return Mail
+     */
+    public function setIsSent($isSent)
+    {
+        $this->isSent = $isSent;
+
+        return $this;
+    }
+
+    /**
+     * Get isSent.
+     *
+     * @return bool
+     */
+    public function getIsSent()
+    {
+        return $this->isSent;
+    }
+
+    /**
+     * Add attachment.
+     *
+     * @param Attachment $attachment
+     *
+     * @return Mail
+     */
+    public function addAttachment(Attachment $attachment)
+    {
+        $this->attachments[] = $attachment;
+        $attachment->setMail($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove attachment.
+     *
+     * @param Attachment $attachment
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeAttachment(Attachment $attachment)
+    {
+        $attachment->setMail();
+        return $this->attachments->removeElement($attachment);
+    }
+
+    /**
+     * Get attachments.
+     *
+     * @return Collection
+     */
+    public function getAttachments()
+    {
+        return $this->attachments;
+    }
+
+    public function __toString()
+    {
+        return $this->sender;
+    }
+}

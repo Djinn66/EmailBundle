@@ -1,0 +1,5 @@
+## MailEmailManagerBundle Admin
+mail_email_manager:
+    resource: "@MailEmailManagerBundle/Controller"
+    type:     annotation
+    prefix:   /back-office

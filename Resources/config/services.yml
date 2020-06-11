@@ -1,0 +1,14 @@
+services:
+    mail.utils.mail_manager:
+        class: Mail\EmailManagerBundle\Utils\MailManager
+        arguments:
+            - "@swiftmailer.mailer"
+            - "@doctrine.orm.entity_manager"
+
+    mail.utils.html_to_text:
+        class: Mail\EmailManagerBundle\Utils\HtmlToText
+
+    mail.utils.file_uploader:
+        class: Mail\EmailManagerBundle\Utils\FileUploader
+        arguments:
+            $targetDirectory: '%email_manager_uploads_directory%'

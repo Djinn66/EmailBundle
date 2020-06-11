@@ -1,0 +1,113 @@
+//there are two types of attachment : mail.attachment or dropzone.uploaded.attachment
+//constantes
+let nSupportedMaxSize = {{ parameters.attachmentMaxSize }}; //don't forget to change upload_max_size and post_max_size in php.ini
+const MEGA_BYTE = 1000000;// MB
+const KILO_BYTE = 1000; // KB
+const DISPLAY_ROUNDING = 2;// rounding float number for display it
+
+//save the html template and remove it
+let previewNode = document.querySelector("#template");
+let previewTemplate = previewNode.parentNode.innerHTML;
+previewNode.id = "";
+previewNode.parentNode.removeChild(previewNode);
+
+//initialize vars
+let textProgressBar = "";
+let nRestForAttachments = nSupportedMaxSize - {{ attachmentSize }} ;//rest for attachments after attached mail.attachments
+let attachmentIds = "";
+let $attachmentIds = $("input#mail_attachmentIds");
+
+//initialize the whole body a dropzone
+let myDropzone = new Dropzone(document.body, {
+    url: "{{ path('api_add_upload') }}",
+    parallelUploads: 10,
+    maxFilesize: nRestForAttachments / MEGA_BYTE,
+    previewTemplate: previewTemplate,
+    acceptedFiles: "{{ parameters.attachmentAcceptedFiles }}",
+    previewsContainer: "#previews",
+    clickable: ".fileinput-button"
+});
+
+progressBarAction(nRestForAttachments);
+
+myDropzone.on("success", function (file, response) {
+    let rAttachmentId = response.attachment;
+    file.attachmentId = rAttachmentId;
+    attachmentIds += ((attachmentIds !== "") ? "," : "") + rAttachmentId;
+    $attachmentIds.val(attachmentIds);
+    nRestForAttachments -= file.size;
+    progressBarAction(nRestForAttachments);
+
+}).on("error", function (file, data) {
+
+    if (file.size > nRestForAttachments) {
+        alertModal("Taille du fichier : " + file.name + " trop grande! Reste : " + textRestForAttachments(nRestForAttachments));
+    } else {
+        alertModal("Extension du fichier " + file.name + " non supporté!");
+    }
+    file.previewElement.remove();
+
+}).on("removedfile", function (file) {
+    let idToRemove = file.attachmentId.toString();
+    $.ajax({
+        url: "{{ path('api_delete_upload') }}",
+        method: "POST",
+        data: "attachmentId=" + idToRemove,
+        dataType: "json",
+    }).done(function (response) {
+        if (!response.success) {
+            alert(response.message);
+        }
+        let aAttachmentIds = attachmentIds.split(",");
+        let posIdToRemove = aAttachmentIds.indexOf(idToRemove.toString());
+        aAttachmentIds.splice(posIdToRemove, 1);
+        attachmentIds = aAttachmentIds.join(",");
+        $attachmentIds.val(attachmentIds);
+    });
+    nRestForAttachments += file.size;
+    progressBarAction(nRestForAttachments);
+});
+
+// #mail_attachmentIdsToRemove is a hiddenType who contains each mail.attachment.id to remove
+let aAttachmentIdsToRemove = "";
+
+$("i.remove-attachment").on("click", function (event) {
+    let $attachmentDiv = $(this.parentNode.parentNode);
+    aAttachmentIdsToRemove += ((aAttachmentIdsToRemove !== "") ? "," : "") + $attachmentDiv.attr("data-attachment-id");
+    nRestForAttachments += parseInt($attachmentDiv.attr("data-attachment-size"), 10);
+    progressBarAction(nRestForAttachments);
+    $attachmentDiv.remove();
+    $("input#mail_attachmentIdsToRemove").val(aAttachmentIdsToRemove);
+});
+
+/**
+ * update progressBar
+ *
+ * @param nRestForAttachments
+ */
+function progressBarAction(nRestForAttachments) {
+
+    myDropzone.options.maxFilesize = nRestForAttachments / MEGA_BYTE;
+    let nActualSize = nSupportedMaxSize - nRestForAttachments;
+    let sizePercent = (nActualSize / nSupportedMaxSize * 100).toFixed(DISPLAY_ROUNDING) + '%';
+    textProgressBar = (nActualSize / MEGA_BYTE).toFixed(DISPLAY_ROUNDING);
+    let $progressBarAttachment = $("#progress-bar-attachment");
+    $progressBarAttachment.width(sizePercent);
+    $('#btn-attachment').attr('data-original-title', "Reste : "+ textRestForAttachments(nRestForAttachments)  );
+
+}
+
+/**
+ * Prepare text to display
+ *
+ * @param nRestForAttachments
+ * @returns {string}
+ */
+function textRestForAttachments(nRestForAttachments) {
+    if (nRestForAttachments > MEGA_BYTE) {
+        return (nRestForAttachments / MEGA_BYTE).toFixed(DISPLAY_ROUNDING) + " Mo";
+    } else if (nRestForAttachments > KILO_BYTE) {
+        return (nRestForAttachments / KILO_BYTE).toFixed(DISPLAY_ROUNDING) + " Ko";
+    }
+    return nRestForAttachments.toString() + " octets";
+}

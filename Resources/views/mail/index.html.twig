@@ -1,0 +1,90 @@
+{% extends 'MailThemeInspiniaBundle:SubLayout:inspiniaIndex.v2.html.twig' %}
+{% trans_default_domain 'MailEmailManagerBundle' %}
+{% set param_entity='Mail' %}
+{% set param_entities='Mails'%}
+
+{% block mail_list %}
+    <h1>Mail index</h1>
+
+    <table class="table table-striped table-hover dataTables table-mail">
+        <thead>
+            <tr>
+                <th>Selected</th>
+                <th>Recipients</th>
+                <th>Subject</th>
+                <th>Sent at</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mail in mails %}
+            <tr class="read">
+
+                <td class="">
+                            <input class="i-checks" type="checkbox">
+                </td>
+                <td><a href="{{ path('mail_edit',{'id': mail.id}) }}" data-toggle="modal" data-target="#modalForm">{{ mail.recipients }}</td></a>
+                <td><a href="{{ path('mail_edit',{'id': mail.id}) }}" data-toggle="modal" data-target="#modalForm">{{ mail.subject }}</td></a>
+                <td>
+                    {{ mail.sentat ? (mail.sentat|date('Y-m-d') == date()|date('Y-m-d')) ? mail.sentat|date('H:i') : mail.sentat|date('d ') ~ ('months.'~mail.sentat|date('M')|lower)|trans ~ mail.sentat|date(' Y')  : 'unsent' }}
+                </td>
+                <td>
+                    {{ include('@MailEmailManager/mail/_delete_form.html.twig') }}
+                    {% if not mail.issent %}
+                        <a class="btn" href="{{ path('mail_send',{'id': mail.id}) }}"><i class="glyphicon glyphicon-share"></i> </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+    </tbody>
+
+
+    <a href="{{ path('mail_new') }}" class="modal-toggle" data-toggle="modal" data-target="#modalForm">Create new</a>
+{% endblock mail_list%}
+
+
+{% block mail_css %}
+    {{ parent() }}
+
+    {# -summernote-#}
+    <link href="{{ asset('bundles/mailthemeinspinia/css/plugins/summernote/summernote.css') }}" rel="stylesheet">
+    {# -bootstrap-tagsinput-#}
+    <link href="{{ asset('bundles/mailthemeinspinia/css/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css') }}" rel="stylesheet">
+    {# -dropzone-#}
+    <link href="{{ asset('bundles/mailthemeinspinia/css/plugins/dropzone/dropzone.css') }}" rel="stylesheet">
+    {# -emailManagerBundle-#}
+    <link href="{{ asset('bundles/mailemailmanager/css/mmb.css') }}" rel="stylesheet">
+
+
+    {# DataTables #}
+    <link href="{{ asset('bundles/mailthemeinspinia/css/plugins/dataTables/datatables.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('bundles/mailthemeinspinia/css/plugins/iCheck/custom.css') }}" rel="stylesheet">
+
+{% endblock mail_css %}
+
+{% block mail_js %}
+    {{ parent() }}
+
+    {# -summernote-#}
+    <script src="{{ asset('bundles/mailthemeinspinia/js/plugins/summernote/summernote.min.js') }}"></script>
+    {# -bootstrap-tagsinput-#}
+    <script src="{{ asset('bundles/mailthemeinspinia/js/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js') }}"></script>
+    <script src="{{ asset('bundles/mailthemeinspinia/js/plugins/typehead/bootstrap3-typeahead.min.js') }}"></script>
+    {# -dropzone-#}
+    <script src="{{ asset('bundles/mailthemeinspinia/js/plugins/dropzone/dropzone.js') }}"></script>
+    {# -emailManagerBundle-#}
+    <script src="{{ asset('bundles/mailemailmanager/js/mmb.js') }}"></script>
+
+
+    {# DataTables #}
+    <script src="{{ asset('bundles/mailthemeinspinia/js/plugins/dataTables/datatables.min.js') }}"></script>
+    <script src="{{ asset('bundles/mailthemeinspinia/js/plugins/dataTables/datatables.min.js') }}"></script>
+    <script src="{{ asset('bundles/mailthemeinspinia/js/plugins/iCheck/icheck.min.js') }}"></script>
+{% endblock %}
